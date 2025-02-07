@@ -233,29 +233,32 @@
         let gameOverReason = "";
         let currentQuestion = { num1: 0, num2: 0, result: 0 };
 
-        // 初始化敌方蛇
-        function initEnemySnakes() {
-            enemySnakes.forEach((enemy, index) => {
-                enemy.body = [];
-                
-                // 每条蛇的起始位置略有不同
-                const startX = Math.floor(Math.random() * (tileCount - 10)) + 5;
-                const startY = Math.floor(Math.random() * (tileCount - 10)) + 5;
-                
-                // 三条蛇的前进方向各不相同
-                const directions = [[1, 0], [-1, 0], [0, 1]]; // 右、左、下
-                const [dirX, dirY] = directions[index];
-                
-                for(let i = 0; i < 5; i++) {
-                    enemy.body.push({ 
-                        x: startX + (i * dirX),
-                        y: startY + (i * dirY)
-                    });
-                }
-                enemy.dx = dirX;
-                enemy.dy = dirY;
+// 初始化敌蛇（确保与玩家初始位置保持一定距离）
+function initEnemySnakes() {
+    enemySnakes.forEach((enemy, index) => {
+        enemy.body = [];
+        
+        let startX, startY;
+        let safeDistance = 5; // 与玩家保持的最小距离
+        do {
+            startX = Math.floor(Math.random() * (tileCount - 10)) + 5;
+            startY = Math.floor(Math.random() * (tileCount - 10)) + 5;
+        } while (Math.abs(startX - snake[0].x) < safeDistance && Math.abs(startY - snake[0].y) < safeDistance);
+
+        const directions = [[1, 0], [-1, 0], [0, 1]];
+        const [dirX, dirY] = directions[index];
+
+        for(let i = 0; i < 5; i++) {
+            enemy.body.push({ 
+                x: startX + (i * dirX),
+                y: startY + (i * dirY)
             });
         }
+        enemy.dx = dirX;
+        enemy.dy = dirY;
+    });
+}
+
 
         // 移动敌方蛇
         function moveEnemies() {
